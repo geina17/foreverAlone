@@ -28,7 +28,7 @@
             <hr>
             <h2>On a scale of one to five how much do you agree?five being you agree.</h2>
             <div class="form-group">
-                <label for='q1' class='lead'> </label>
+                <label for='q1' class='lead'>Do you nerd out on things you like? </label>
                 <select id='q1' class="form-control" required>
                     <option value="" selected disabled>please select</option>
                     <option value="1">1</option>
@@ -40,7 +40,7 @@
             </div>
             <br>
             <div class="form-group">
-                <label for='q2' class='lead'> </label>
+                <label for='q2' class='lead'>Do you like pushing your limits? </label>
                 <select id='q2' class="form-control" required>
                     <option value="" selected disabled>please select</option>
                     <option value="1">1</option>
@@ -52,7 +52,7 @@
             </div>
             <br>
             <div class="form-group">
-                <label for='q3' class='lead'> </label>
+                <label for='q3' class='lead'>Do you enjoy driving around with the windows down and loud music? </label>
                 <select id='q3' class="form-control" required>
                     <option value="" selected disabled>please select</option>
                     <option value="1">1</option>
@@ -64,7 +64,7 @@
             </div>
             <br>
             <div class="form-group">
-                <label for='q4' class='lead'> </label>
+                <label for='q4' class='lead'>Can you just sit in a room with your friend in silence n still feel like youre bonding? </label>
                 <select id='q4' class="form-control" required>
                     <option value="" selected disabled>please select</option>
                     <option value="1">1</option>
@@ -76,7 +76,7 @@
             </div>
             <br>
             <div class="form-group">
-                <label for='q5' class='lead'> </label>
+                <label for='q5' class='lead'>Would you utilize party drugs? </label>
                 <select id='q5' class="form-control" required>
                     <option value="" selected disabled>please select</option>
                     <option value="1">1</option>
@@ -88,7 +88,7 @@
             </div>
             <br>
             <div class="form-group">
-                <label for='q6' class='lead'> </label>
+                <label for='q6' class='lead'>Do you take pinkie promises seriously? </label>
                 <select id='q6' class="form-control" required>
                     <option value="" selected disabled>please select</option>
                     <option value="1">1</option>
@@ -100,7 +100,7 @@
             </div>
             <br>
             <div class="form-group">
-                <label for='q7' class='lead'> </label>
+                <label for='q7' class='lead'>Have you ever had a friend with benifits? </label>
                 <select id='q7' class="form-control" required>
                     <option value="" selected disabled>please select</option>
                     <option value="1">1</option>
@@ -111,9 +111,8 @@
                 </select>
             </div>
             <br>
-            <video src="v"></video>
             <div class="form-group">
-                <label for='q8' class='lead'> </label>
+                <label for='q8' class='lead'>Have you ever wanted to run away? </label>
                 <select id='q8' class="form-control" required>
                     <option value="" selected disabled>please select</option>
                     <option value="1">1</option>
@@ -125,7 +124,7 @@
             </div>
             <br>
             <div class="form-group">
-                <label for='q9' class='lead'> </label>
+                <label for='q9' class='lead'>Wanna go get late night pancakes?</label>
                 <select id='q9' class="form-control" required>
                     <option value="" selected disabled>please select</option>
                     <option value="1">1</option>
@@ -137,7 +136,7 @@
             </div>
             <br>
             <div class="form-group">
-                <label for='q10' class='lead'> </label>
+                <label for='q10' class='lead'>Can you keep a secret? </label>
                 <select id='q10' class="form-control" required>
                     <option value="" selected disabled>please select</option>
                     <option value="1">1</option>
@@ -155,7 +154,7 @@
         <footer class="footer">
             <div class="container">
                 <p>
-                    <a href="/api/friends" target="_blank>API Friends lists"></a>|
+                    <a href="/api/friends" target="_blank>API Friends lists">API friends list</a>|
                     <a href="https://github.com/geina17/foreverAloneApp" target='_blank'>github</a>
                 </p>
             </div>
@@ -166,7 +165,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss='modal'>&times;</button>
-                    <h4 class= 'modal-title'></h4>
+                    <h4 class='modal-title'></h4>
                 </div>
                 <div class="modal-body"></div>
                 <div class="modal-footer">
@@ -177,7 +176,78 @@
     </div>
     <script type="text/javascript">
         //set up global vars
-        var name,image,q1,q2,q3,q4,q5,q6,q7,q8,q9,q10,noob;
+        var name, image, q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, noob;
+
+        $('#submit').on('click', function (event) {
+            event.preventDefault();
+
+            //set vars
+            name = $('#name').val();
+            image = $('#image').val();
+            q1 = parseInt($('#q1').val());
+            q2 = parseInt($('#q2').val());
+            q3 = parseInt($('#q3').val());
+            q4 = parseInt($('#q4').val());
+            q5 = parseInt($('#q5').val());
+            q6 = parseInt($('#q6').val());
+            q7 = parseInt($('#q7').val());
+            q8 = parseInt($('#q8').val());
+            q9 = parseInt($('#q9').val());
+            q10 = parseInt($('#q10').val());
+            noob = {
+                name: name,
+                image: image,
+                responses: [q1, q2, q3, q4, q5, q6, q7, q8, q9, q10],
+                total: q1 + q2 + q3 + q4 + q5 + q6 + q7 + q8 + q9 + q10
+            };
+            //local vars
+            var tit = $('.modal-title');
+            var bod = $('.modal-body');
+            var modal = $('#modal');
+            var friendle = '/api/friends';
+
+            if (formVal()) {
+                $.get(apiFrindsRoute, function (data) {
+                    var match = makeMatch(data);
+                    if (match.name !== undefined) {
+                        tit.text('You have things in common!!');
+                        bod.text("<p class'strong'You are most friendly with:</p><p>" + match.name + '</p><img src="' + match.image + "height='45'>");
+                    } else {
+                        tit.text('FOrver ALone');
+                        bod.text('Go get some hobbies');
+                    }
+                }).then(function () {
+                    modal.show();
+                    $('.form')[0].reset();
+                    $.post(apiFrindsRoute, noob);
+                });
+            } else {
+                tit.text('error');
+                body.text('You missed something');
+                modal.show();
+            }
+        });
+        function formVal() {
+            return (name !== '' && image !== '' && !isNaN(q1) && !isNaN(q2) && !isNaN(q3) && !isNaN(q4) && !isNaN(q5) && !isNaN(q6) && !isNaN(q7) && !isNaN(q8) && !isNaN(q9) && !isNaN(q10))
+        }
+        function makeMatch(data) {
+            var diff = 50;
+            var minN;
+            var minI;
+            data.forEach(function (person) {
+                var localDiff = Math.abs(noob.total - person.total);
+                if (localDiff < diff) {
+                    diff = localDiff;
+                    minN = person.name;
+                    minI = person.image;
+                }
+            });
+            return {
+                name: minN,
+                image: minI
+            };
+        }
+
     </script>
 </body>
 
