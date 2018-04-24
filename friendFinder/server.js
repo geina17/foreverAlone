@@ -6,7 +6,7 @@ var dock = process.env.PORT || 3000;
 
 //sets up  express app to handle the data parsing
 app.use(parser.json());
-app.use(parser.urlencoded({exetended:true}));
+app.use(parser.urlencoded({extended:true}));
 app.use(parser.text());
 app.use(parser.json({type:'application/vnd.api+json'}));
 
