@@ -100,7 +100,7 @@
             </div>
             <br>
             <div class="form-group">
-                <label for='q7' class='lead'>Have you ever had a friend with benifits? </label>
+                <label for='q7' class='lead'>Have you ever had a friend with benefits? </label>
                 <select id='q7' class="form-control" required>
                     <option value="" selected disabled>please select</option>
                     <option value="1">1</option>
@@ -147,7 +147,7 @@
                 </select>
             </div>
             <br>
-            <button type="button" id='submit' class="btn btn-sucess btn-lg btn-block" data-toggle="model" data-target="#modal">
+            <button type="button" id='submit' class="btn btn-success btn-lg btn-block" data-toggle="modal" data-target="#modal">
                 <i class="fa fa-check-square" aria-hidden='true'></i>Submit</button>
         </form>
         <br/>
@@ -165,11 +165,13 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss='modal'>&times;</button>
-                    <h4 class='modal-title'></h4>
+                    <h4 class='modal-title'>Meet your new beastie!</h4>
                 </div>
-                <div class="modal-body"></div>
+                <div class="modal-body">
+                    <h1 id="matchName"> </h1>
+                </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-deafult" data-dismiss="modal">close</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">close</button>
                 </div>
             </div>
         </div>
@@ -181,73 +183,102 @@
         $('#submit').on('click', function (event) {
             event.preventDefault();
 
-            //set vars
-            name = $('#name').val();
-            image = $('#image').val();
-            q1 = parseInt($('#q1').val());
-            q2 = parseInt($('#q2').val());
-            q3 = parseInt($('#q3').val());
-            q4 = parseInt($('#q4').val());
-            q5 = parseInt($('#q5').val());
-            q6 = parseInt($('#q6').val());
-            q7 = parseInt($('#q7').val());
-            q8 = parseInt($('#q8').val());
-            q9 = parseInt($('#q9').val());
-            q10 = parseInt($('#q10').val());
-            noob = {
-                name: name,
-                image: image,
-                responses: [q1, q2, q3, q4, q5, q6, q7, q8, q9, q10],
-                total: q1 + q2 + q3 + q4 + q5 + q6 + q7 + q8 + q9 + q10
-            };
-            //local vars
-            var tit = $('.modal-title');
-            var bod = $('.modal-body');
-            var modal = $('#modal');
-            var friendle = '/api/friends';
-
-            if (formVal()) {
-                $.get(apiFrindsRoute, function (data) {
-                    var match = makeMatch(data);
-                    if (match.name !== undefined) {
-                        tit.text('You have things in common!!');
-                        bod.text("<p class'strong'You are most friendly with:</p><p>" + match.name + '</p><img src="' + match.image + "height='45'>");
-                    } else {
-                        tit.text('FOrver ALone');
-                        bod.text('Go get some hobbies');
+            function validation(){
+                var isVal = true;
+                $('.form-control').each(function(){
+                    if($(this).val()===''){
+                        isVal = false;
                     }
-                }).then(function () {
-                    modal.show();
-                    $('.form')[0].reset();
-                    $.post(apiFrindsRoute, noob);
                 });
-            } else {
-                tit.text('error');
-                body.text('You missed something');
-                modal.show();
+                return isVal;
             }
-        });
-        function formVal() {
-            return (name !== '' && image !== '' && !isNaN(q1) && !isNaN(q2) && !isNaN(q3) && !isNaN(q4) && !isNaN(q5) && !isNaN(q6) && !isNaN(q7) && !isNaN(q8) && !isNaN(q9) && !isNaN(q10))
-        }
-        function makeMatch(data) {
-            var diff = 50;
-            var minN;
-            var minI;
-            data.forEach(function (person) {
-                var localDiff = Math.abs(noob.total - person.total);
-                if (localDiff < diff) {
-                    diff = localDiff;
-                    minN = person.name;
-                    minI = person.image;
-                }
-            });
-            return {
-                name: minN,
-                image: minI
-            };
-        }
+            
 
+            if (validation()){
+                //set vars
+                var userData = {
+                    name : $('#name').val(),
+                    image: $('#image').val(),
+                    score: [
+                        $('#q1').val(),
+                        $('#q2').val(),
+                        $('#q3').val(),
+                        $('#q4').val(),
+                        $('#q5').val(),
+                        $('#q6').val(),
+                        $('#q7').val(),
+                        $('#q8').val(),
+                        $('#q9').val(),
+                        $('#q10').val()
+                    ]
+                };
+                //location of root pg
+                var crntURL = windows.location.origin;
+                $.post(crntURL + '/api/friends', userData)
+                    .then(function (data) {
+                        $(".form-control").val("");
+                        $(".chosen-select").val("");
+                        $('#matchName').text(data.name)
+                    });
+                //ajax uses the url of api to get the data associated w/it
+                $.ajax({ 
+                    url: crntURL + '/api/friends', 
+                    method: 'GET' 
+                }).done(function (res) {
+                    var bstMatch;
+                    var quizDiff = [];
+                    var vArray = [];
+
+                    //loop thro each survey
+                    for (var i = 0; i < res.length - 1; i++) {
+                        for (var j = 0; j < 10; j++) {
+                            var qDiff = userData.scores[j] - res[i].scores[j];
+                            quizDiff.push(Math.abs(qDiff))
+                        }
+                        var totDiff = quizDiff.reduce(getSum);
+                        console.log('quizDiff:' + quizDiff);
+                        console.log('totDiff:' + totDiff);
+
+                        //get sum of q differ for ech survey
+                        quizDiff = [];
+
+                        //stores all sums in a new array
+                        vArray.push(totDiff);
+                        console.log(vArray);
+                        //find min sum diff
+                        function min(vArray){
+                            if(vArray ===0){
+                                return -1;
+                            }
+                            var mini =varianceArray[0];
+                            var index =0;
+                            for (var i=1;i<vArray.length;i++){
+                                if(vArray[i]<min){
+                                    index =i;
+                                    mini=varianceArray[i];
+                                }
+                            }
+                            console.log('index'+index);
+                            console.log(res[parseInt(index)].name);
+                            bstMatch =res[parseInt(index)].name;
+                            console.log('bestmatch'+bstMatch);
+                        }
+                    }
+                    //call function
+                    min(vArray);
+                    //send results
+                    var matchPix = '<img width="300px"src='+ matchPix+'>';
+                    $(".modal-title").html();
+                    $(".modal-body").html(bestMatchPic + "<br>" + "<h3><i>" + '"' + bestMatchQuote + '"' + "</i></h3>");
+                    $("#matchModal").modal('show');
+                });
+            }else{
+                alert('please fill out all fields');
+            };
+            function getSum(total,num){
+                return total+num;
+            };
+        });
     </script>
 </body>
 
